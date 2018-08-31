@@ -3,16 +3,17 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle:
-description:
+title: Gloomy & Leefering
+subtitle: Gloomy ( ˘ ³˘)♥ Leefering
+description: A ios Coder with his's lover 
 keywords:
-author: John Doe
-language:
+author: Gloomy Meng
+language: zh-Hans
 timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
+avatar: https://scontent-nrt1-1.xx.fbcdn.net/v/t1.0-9/39141765_127952571475168_3125586733685538816_n.jpg?_nc_cat=0&oh=b344451e96f03a5766450b65b3b6f08c&oe=5C2980B6
 url: http://yoursite.com
 root: /
 permalink: :year/:month/:day/:title/
