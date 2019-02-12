@@ -13,7 +13,7 @@ timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-avatar: https://scontent-nrt1-1.xx.fbcdn.net/v/t1.0-9/39141765_127952571475168_3125586733685538816_n.jpg?_nc_cat=0&oh=b344451e96f03a5766450b65b3b6f08c&oe=5C2980B6
+avatar: 
 url: http://yoursite.com
 root: /
 permalink: :year/:month/:day/:title/
