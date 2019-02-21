@@ -16,7 +16,7 @@ timezone:
 avatar: 
 url: http://yoursite.com
 root: /
-permalink: :year/:month/:day/:title/
+permalink: :year/:month/:day/:category/:id/
 permalink_defaults:
 
 # Directory
