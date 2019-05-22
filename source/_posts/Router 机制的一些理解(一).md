@@ -1,10 +1,14 @@
 ---
-title: Router 机制的一些理解
+title: Router 机制的一些理解(一)
 date: 2019-02-21 11:30:32
 tags: 
     - Swift
     - Objc
 categories: iOS
+keywords: 
+    - Protocol Router 
+    - Swift
+description: 基于协议的移动端Router方案
 ---
 
 ---

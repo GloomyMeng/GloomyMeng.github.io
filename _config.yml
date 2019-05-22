@@ -14,9 +14,9 @@ timezone:
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 avatar: 
-url: http://yoursite.com
+url: https://gloomymeng.io
 root: /
-permalink: :year/:month/:day/:category/:id/
+permalink: :title.html
 permalink_defaults:
 
 # Directory
@@ -82,3 +82,9 @@ deploy:
   type: git 
   repo: https://github.com/GloomyMeng/gloomymeng.github.io.git
   branch: master
+
+# 自动生成sitemap
+sitemap: 
+  path: sitemap.xml
+baidusitemap: 
+  path: baidusitemap.xml
