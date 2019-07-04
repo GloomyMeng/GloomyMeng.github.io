@@ -88,14 +88,14 @@
 <meta name="description" content="基于协议的移动端Router方案">
 <meta name="keywords" content="Protocol Router,Swift">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Router 机制的一些理解(一)">
-<meta property="og:url" content="https://gloomymeng.io/Router 机制的一些理解(一).html">
+<meta property="og:title" content="Router 机制的一些理解(三)">
+<meta property="og:url" content="https://gloomymeng.io/Router-机制的一些理解-三.html">
 <meta property="og:site_name" content="Gloomy &amp; Leefering">
 <meta property="og:description" content="基于协议的移动端Router方案">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-02-25T02:29:41.386Z">
+<meta property="og:updated_time" content="2019-07-04T07:40:22.285Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Router 机制的一些理解(一)">
+<meta name="twitter:title" content="Router 机制的一些理解(三)">
 <meta name="twitter:description" content="基于协议的移动端Router方案">
 
 
@@ -126,13 +126,13 @@
 
 
 
-  <link rel="canonical" href="https://gloomymeng.io/Router 机制的一些理解(一).html">
+  <link rel="canonical" href="https://gloomymeng.io/Router-机制的一些理解-三.html">
 
 
 
 
 
-  <title>Router 机制的一些理解(一) | Gloomy & Leefering</title>
+  <title>Router 机制的一些理解(三) | Gloomy & Leefering</title>
   
 
 
@@ -259,7 +259,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gloomymeng.io/Router 机制的一些理解(一).html">
+    <link itemprop="mainEntityOfPage" href="https://gloomymeng.io/Router-机制的一些理解-三.html">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Gloomy Meng">
@@ -276,7 +276,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Router 机制的一些理解(一)</h1>
+          <h1 class="post-title" itemprop="name headline">Router 机制的一些理解(三)</h1>
         
 
         <div class="post-meta">
@@ -288,8 +288,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-21T11:30:32+08:00">
-                2019-02-21
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-04T14:39:32+08:00">
+                2019-07-04
               </time>
             
 
@@ -329,8 +329,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/Router 机制的一些理解(一).html#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="Router 机制的一些理解(一).html" itemprop="commentCount"></span>
+                <a href="/Router-机制的一些理解-三.html#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="Router-机制的一些理解-三.html" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -362,78 +362,7 @@
       
 
       
-        <hr>
-<p>App中Router机制本身的描述请参考下面文章，包括概念，适用场景，以及已知开源的项目的设计思路</p>
-<p><a href="https://www.jianshu.com/p/76da56b3bd55" target="_blank" rel="noopener">iOS 组件化 —— 路由设计思路分析</a></p>
-<hr>
-<p>这篇文章主要内容是自己的一些理解以及具体代码事例，仅从参考，如有思考不到位的，欢迎指出。</p>
-<p>在app的开发过程中，逐渐的组件化和模块化是必然的一个过程。在这个过程中，我们会考虑到模块化甚至是组件化的耦合问题，所以某种成都上我们需要一个第三者来帮我们完成这项工作，来达到调用方和被调用方彼此不互相依赖的目的。</p>
-<p>这里补充一句组件化和模块化的区别。自己对经常谈到的<strong>App组件化开发</strong>，其实是理解成<strong>App模块化开发</strong>。</p>
-<p>因为组件化的颗粒度过小。往往会拆分出来一个叫基础事业部的部分负责整个公司的基础组件与基础技术研究，而其他人员是按照业务线或者按照项目进行分组开发。</p>
-<p>为什么这么分割，其实区分一下组件和模块的概念就可以知道</p>
-<p>组件：</p>
-<ul>
-<li>为了更好的重用，同时达到解耦</li>
-<li>对外暴露的往往非同一规范API。一般会根据自身功能决定具体对外暴露API</li>
-<li>整理来说是对项目的横向细分，譬如： 字体管理组件， 图片上传组件等</li>
-</ul>
-<p>模块：</p>
-<ul>
-<li>为了更好的隔离以及封装，内部高内聚，同时达到解耦</li>
-<li>对外暴露相对统一的API，针对业务或功能模块决定对外暴露的API</li>
-<li>按业务对项目纵向拆分，或按大功能进行的横向/纵向拆分，譬如：订单业务线模块，聊天模块，用户定位统计等</li>
-</ul>
-<p>项目进行拆分是为了解决相互间的耦合问题。而拆分完之后需要进行合并式，这时候就需要一个机制来既保证相互间的独立性，低耦合度。同时保证本身对模块的低侵入。最后是需要保证有足够的健壮性来保证稳定</p>
-<p>综上所属，这是App中Router所需要实现的内容以及要求，下面进行简单梳理：</p>
-<ul>
-<li>对模块/组件的低侵入性</li>
-<li>类型安全检查，容错机制 </li>
-<li>本身的设计以达到更好的拓展和复用</li>
-</ul>
-<p>所以这里其实Router在我理解属于组件而非模块。</p>
-<hr>
-<p>可以参考开头引用的文章，对已有的开源框架简单做一个梳理</p>
-<ol>
-<li>基于 URL encode<br>简单实现思路即是统一通过制定的URL规则来区分各自模块，同时通过URL拼接参数来实现相互之间的参数传递。<br>具体实现上会有若干的不同，这里开头文章已有描述，所以在这里不做赘述。只多写几句自己的理解</li>
-</ol>
-<ul>
-<li>统一的规范URL可以方便的复用在多端上面。但自己工作经验来说相对小的公司难以规范并持续下去，相对大的公司容易进行规范管理。</li>
-<li>有主壳统一的进行注册操作和由各个模块自己实现注册操作。这里两者的区别从代码层来说区别不大，只是某些代码写在主壳还是有各个模块的初始化（如果需要初始化)中 or 其他地方。但是从个人理解的设计角度来讲这里是明确两个职责，一个是映射关系的创建维护 一个是具体Router的功能实现。延展一下，是否可以支持动态可控的映射关系</li>
-<li>本身可以同时方便兼容 URL scheme </li>
-<li>参数传递依赖URL参数。导致需要正反序列</li>
-<li>业务模块与业务模块之间使用Router进行跳转在大多时候是不需要改变的，例外的情况遇到的只有在需要动态控制。非业务模块的在这种模式下属于相对尴尬的用不用皆可的位置。</li>
-<li>本身维护成本和健壮性的问题。因为基于URL，所以需要准确约定并同步。这里面比较重要的一部分是参数以及API。依赖URL传参，意味着对外暴露的API只有文档了。不利于维护</li>
-<li>被调用方在发生变化后需要更改调用方</li>
-</ul>
-<ol start="2">
-<li>基于 run-time<br>这里貌似可以参考的只有<a href="https://github.com/casatwy/CTMediator" target="_blank" rel="noopener">CTMediator</a>。简单来说就是依赖run-time的‘- (id)performSelector:(SEL)aSelector withObject:(id)object;’ 来实现。这里面各个模块对外暴露自己的昵称identifier 以及具体具体的action。CTMediator负责做查找和调用。</li>
-</ol>
-<ul>
-<li>省略了前面说的两个职责重的映射关系的创建维护，直接通过模块自己的对外暴露来解决了</li>
-<li>某种程度上来讲和 URL encode 一样依旧是硬编码具体的某个 identity</li>
-<li>依旧是参数传递</li>
-<li>被调用方在发生变化后需要更改调用方</li>
-</ul>
-<ol start="3">
-<li>基于本身架构设计实现</li>
-</ol>
-<p>这里面以 Viper &amp; <a href="https://github.com/uber/RIBs" target="_blank" rel="noopener">RIBs</a> 简单说下。<br>在这个工程的项目设计中 自带支持 Router，并且 Router在其中的设计中占有一席之地。感兴趣的人员可以自己搜索相关资料去了解。<br>因为Router本身在设计中扮演一定的角色，这种方式实现的Router有其与生俱来的很多优势，譬如参数传递，映射关系的创建维护等。<br>吹毛求疵的说一下缺点的话只有成本了。需要整理或者完整的块本身的实现</p>
-<hr>
-<p>上面的是我已知的一些框架以及自己对Router组件的理解，过往经历其实更多的是使用URL encode方式去满足业务。有过一些经验在上面讲的不足的地方去优化。但是最终达到的效果好像是能称之为满足需求同时勉强方便自己。</p>
-<p>这里总结下自己认为的好的Router组件所需要满足的条件，后续文章我会给出一个设计带实现。</p>
-<ol>
-<li>映射关系的管理和维护这里需要满足是足够清晰并且足够健壮，支持动态修改。同时对业务模块本身要足够的低侵入。甚至说可以的话希望做到无侵入性。为什么不选择交由业务模块本身去做，这里给出一个理由是Router组件本身和其他组件或者模块应该也是解耦的，并不认同把Router定位成所有模块的基础依赖来实现自由注册</li>
-<li>参数传递这里涉及参数验证，错误处理，以及一方改动不建议需要其他人相应改动</li>
-<li>关于 URL scheme 的支持这里倾向于单独模块处理而非整合到 Router 内部。给出的原因：<ol>
-<li>一是两者本身是上下层的关系，应该是 URL scheme完成解析后通过Router完成跳转。针对多端需要统一 URL scheme 同时建议统一 URL router的问题可以通过添加一层逻辑处理来完成</li>
-<li>URL scheme 在大厂展开来做其实一点不简单，所以这里简单划分下两者职责，一个是负责 App 内部跳转组件，一个是 App 与 App 间跳转的组件 or 模块</li>
-</ol>
-</li>
-<li>耦合度。不论是与调用方还是被调用方，这里补充一点是为了保证一方变化不需要更改另一方/多方的，Router本身可能需要通过一定的胶水代码来实现。坏处是额外的胶水代码，好处是针对调用房和被调用方在使用中减少开销。</li>
-</ol>
-<hr>
-<p>PS： 开会会打断思路 - -！</p>
-
+        
       
     </div>
     
@@ -480,8 +409,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/从业-2018-2019-的无病呻吟.html" rel="next" title="从业(2018-2019)的无病呻吟">
-                <i class="fa fa-chevron-left"></i> 从业(2018-2019)的无病呻吟
+              <a href="/Router-机制的一些理解-二.html" rel="next" title="Router 机制的一些理解(二)">
+                <i class="fa fa-chevron-left"></i> Router 机制的一些理解(二)
               </a>
             
           </div>
@@ -489,10 +418,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/Swift-s-Where-point.html" rel="prev" title="Swift's 'Where' point">
-                Swift's 'Where' point <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -786,9 +711,9 @@
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'https://gloomymeng.io/Router 机制的一些理解(一).html';
-          this.page.identifier = 'Router 机制的一些理解(一).html';
-          this.page.title = 'Router 机制的一些理解(一)';
+          this.page.url = 'https://gloomymeng.io/Router-机制的一些理解-三.html';
+          this.page.identifier = 'Router-机制的一些理解-三.html';
+          this.page.title = 'Router 机制的一些理解(三)';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://Gloomy.disqus.com/embed.js';
