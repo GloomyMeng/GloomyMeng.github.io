@@ -93,7 +93,7 @@
 <meta property="og:site_name" content="Gloomy &amp; Leefering">
 <meta property="og:description" content="基于协议的移动端Router方案">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-04T07:40:22.285Z">
+<meta property="og:updated_time" content="2019-07-12T09:03:55.106Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Router 机制的一些理解(三)">
 <meta name="twitter:description" content="基于协议的移动端Router方案">
@@ -362,7 +362,90 @@
       
 
       
-        
+        <p><strong>控制反转（Ioc, Inversion of Control） 和 依赖注入（Di, Dependency Injection）</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">控制反转是一种设计思想，用于打破调用方和被调用方之前的强持有关系。举例来说 A 依赖 B 去实现某些功能，最初我们会选择在 A 中 new 一个 B 的实例，然后调用 B 去完成我们想做的，这里 A 对 B 是强持有关系，也可以说是强控制关系。</span><br><span class="line">上面的不好之处显而易见，即 A/B 的强关系导致的代码耦合，所以这里引入控制反转的概念，A 不在自己内部去 new 一个 B，而是选择通过某个中间件去获取 B 的实例完成我们想做的，这里 A 对 B 不在有持有关系。通过这样的方式来实现解耦。</span><br><span class="line">而这里的中间件， 有一个名字 叫 Ioc Container，即专门用来实现控制反转的一个组件。 </span><br><span class="line"></span><br><span class="line">控制反转的由来也是基于此，将原本的控制关系颠倒过来，不在是 A 去控制 B。A 不在主动获取资源，而是通过容器返回去被动接受。</span><br><span class="line">举个例子， 我依赖手机去打电话，正向的逻辑是我持有了一个手机，而控制反转则是 我通过共享平台拿到了一个手机，然后去打电话，这样不管你给我是 iPhone 还是 Android，我都不 care，只要打电话就好。</span><br></pre></td></tr></table></figure>
+<p>从这个例子可以引申出来一个概念： Require Interface Provider Interface</p>
+<p>同时拓展一个概念： 回调机制和好莱坞原则</p>
+<hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">而实现控制反转的方式之一就是依赖注入。Ioc Container 在运行期间动态的将 B 交给 A的过程。</span><br></pre></td></tr></table></figure>
+<hr>
+<p>两者其实是对同一件事情的不同角度描述。相比较而言后者这个名字被提出后更容易理解，被注入对象依赖IoC容器配置依赖对象，然后交给调用方。</p>
+<p>Router 的实现目的其实就是为了实现依赖注入来解开模块间的强依赖关系，通过 Router 找到 B 然后给 A 的过程。</p>
+<hr>
+<p><strong>定义角色关系</strong></p>
+<ul>
+<li><p>Setting</p>
+<p>  用于管理 Destination 的 perform 和 remove 的对象。持有多个 block 来完成 Router 的整个生命周期。通过继承或者直接使用来完成 router 操作。 block 中需要注意循环引用的问题</p>
+<ul>
+<li><p>SettingMakeable（Protocol）</p>
+<p>  声明 protocol，表示 Setting 可以通过自己去完成创建最终跳转的 Destination 或</p>
+</li>
+<li><p>Peroform</p>
+<p>  Setting 的子类，可继承。 多了 block 针对 perform 路径</p>
+</li>
+<li><p>Remove </p>
+<p>  Setting 的子类，可继承。多了 block 针对 remove 路径</p>
+</li>
+</ul>
+</li>
+<li><p>StrictSetting&lt; T&gt;</p>
+<p>  类型安全的范型 setting，范型 T 指最终的 Destination。通过一个 setting 实例进行初始化。</p>
+<p>  对外暴露内容均为 setting 需要暴露的内容。</p>
+<ul>
+<li><p>StrictPerform&lt; T&gt;</p>
+<p>  通过一个 Peroform 实例进行初始化。</p>
+<p>  对外暴露内容均为 Peroform 需要暴露的内容。</p>
+</li>
+<li><p>StrictRemove&lt; T&gt;</p>
+<p>  通过一个 Remove 实例进行初始化。</p>
+<p>  对外暴露内容均为 Remove 需要暴露的内容。</p>
+</li>
+</ul>
+</li>
+<li><p>Registry </p>
+<p>  用于管理注册关系的对象，使用多个 CFMutableDictionaryRef 存储映射关系，譬如 ‘DestinationClass:Router’等。对外提供多类型的注册方法以及查询方法</p>
+<ul>
+<li>支持自动注册</li>
+<li>针对视图以及非视图，或者之后拓展的不同模块使用不同的 Registry 的subclass 以作隔离</li>
+<li>支持 class, protocol; identifier 的注册方式</li>
+<li>针对注册部分的检查机制</li>
+</ul>
+</li>
+<li><p>RouteType&lt;T, Perform, Remove&gt;<br>  实现各种功能的一个抽象代理类。 本身内部持有一个 router 或者 route。通过消息转发来进行方法调用。</p>
+<ul>
+<li><p>Router&lt;T, Perform, Remove&gt;</p>
+<p>  用于完成 perform 和 remove 的抽象超类，需要继承来实现某一个具体的 router。<br>  同时本身也负责 destination 的初始化工作。</p>
+<ul>
+<li>performWithXX 的方法（对象方法 and 类方法）通过 block 来返回 destination 实例</li>
+<li>removeWithXX 的方法（对象方法 and 类方法）</li>
+<li>若干方法用于验证是否可 perform/remove</li>
+<li><p>同步获取 destination 的类方法</p>
+</li>
+<li><p>Category </p>
+<ul>
+<li>Internal<ul>
+<li>子类需要/建议/可选的 override methods</li>
+<li>router 当前 state 变化的对外回调 </li>
+<li>通用的 error 方法及 error 声明 </li>
+</ul>
+</li>
+<li>Private<ul>
+<li>内部用于 notify error 的方法</li>
+<li>router 的 defaultPerform/defaultRemove 实现</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Route&lt;T, Perform, Remove&gt;<br>   通过 HLJViewRouter 或 HLJServiceRouter 直接注册的 Destination 本身没有一个 Router 去完成初始化等操作，所以框架内部使用抽象类 Route 来代理实现原本 Router 需要完成的工作。</p>
+<p>  使用抽象类要好于使用内部的一个 Router subclass。本身内部和需要和一个 Router class 绑定，通过消息转发来完成工作。</p>
+<p>  为了实现 RouterType，需要将 Router 的类方法在 Route 中实现为实例方法来实现消息转发</p>
+</li>
+</ul>
+</li>
+</ul>
+
       
     </div>
     
